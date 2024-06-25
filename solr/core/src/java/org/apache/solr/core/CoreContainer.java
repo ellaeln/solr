@@ -450,8 +450,21 @@ public class CoreContainer {
     this.collectorExecutor =
         ExecutorUtil.newMDCAwareFixedThreadPool(
             cfg.getIndexSearcherExecutorThreads(), // thread count
-            cfg.getIndexSearcherExecutorThreads() * 1000, // queue size
+            cfg.getIndexSearcherExecutorThreads(), // queue size
             new SolrNamedThreadFactory("searcherCollector"));
+
+    ((ExecutorUtil.MDCAwareThreadPoolExecutor) collectorExecutor).setRejectedExecutionHandler(new RejectedExecutionHandler() {
+      @Override
+      public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+        if (!executor.isShutdown()) {
+          try {
+            executor.getQueue().put(r);
+          } catch (InterruptedException e) {
+          }
+        }
+      }
+    });
+
   }
 
   @SuppressWarnings({"unchecked"})
