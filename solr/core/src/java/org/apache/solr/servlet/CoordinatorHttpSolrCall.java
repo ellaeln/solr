@@ -18,6 +18,7 @@
 package org.apache.solr.servlet;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,6 +56,7 @@ public class CoordinatorHttpSolrCall extends HttpSolrCall {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private String collectionName;
   private final Factory factory;
+  private  String[] coordinatorRH;
 
   public CoordinatorHttpSolrCall(
       Factory factory,
@@ -72,7 +74,7 @@ public class CoordinatorHttpSolrCall extends HttpSolrCall {
     this.collectionName = collectionName;
     SolrCore core = super.getCoreByCollection(collectionName, isPreferLeader);
     if (core != null) return core;
-    if (!path.endsWith("/select")) return null;
+    if (Arrays.stream(coordinatorRH).noneMatch(rh -> path.endsWith(rh))) return null;
     return getCore(factory, this, collectionName, isPreferLeader);
   }
 
@@ -152,6 +154,7 @@ public class CoordinatorHttpSolrCall extends HttpSolrCall {
     super.init();
     if (action == SolrDispatchFilter.Action.PROCESS && core != null) {
       solrReq = wrappedReq(solrReq, collectionName, this);
+      coordinatorRH = solrReq.getCore().getSolrConfig().coordinatorRH;
     }
   }
 

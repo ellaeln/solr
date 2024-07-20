@@ -65,6 +65,8 @@ public class NodeConfig {
 
   private final Integer booleanQueryMaxClauseCount;
 
+  private final String[] coordinatorRH;
+
   private final Path configSetBaseDirectory;
 
   private final Set<Path> allowPaths;
@@ -132,6 +134,7 @@ public class NodeConfig {
       String coreSorterClass,
       Path solrDataHome,
       Integer booleanQueryMaxClauseCount,
+      String[] coordinatorRH,
       Path configSetBaseDirectory,
       String sharedLibDirectory,
       PluginInfo shardHandlerFactoryConfig,
@@ -172,6 +175,7 @@ public class NodeConfig {
     this.coreSorterClass = coreSorterClass;
     this.solrDataHome = solrDataHome;
     this.booleanQueryMaxClauseCount = booleanQueryMaxClauseCount;
+    this.coordinatorRH = coordinatorRH;
     this.configSetBaseDirectory = configSetBaseDirectory;
     this.sharedLibDirectory = sharedLibDirectory;
     this.shardHandlerFactoryConfig = shardHandlerFactoryConfig;
@@ -588,6 +592,7 @@ public class NodeConfig {
     private String coreSorterClass = DEFAULT_CORESORTERCLASS;
     private Path solrDataHome;
     private Integer booleanQueryMaxClauseCount;
+    private String[] coordinatorRH;
     private Path configSetBaseDirectory;
     private String sharedLibDirectory;
     private String modules;
@@ -691,6 +696,11 @@ public class NodeConfig {
 
     public NodeConfigBuilder setBooleanQueryMaxClauseCount(Integer booleanQueryMaxClauseCount) {
       this.booleanQueryMaxClauseCount = booleanQueryMaxClauseCount;
+      return this;
+    }
+
+    public NodeConfigBuilder setCoordinatorRH(String[] coordinatorRH) {
+      this.coordinatorRH = coordinatorRH;
       return this;
     }
 
@@ -906,6 +916,7 @@ public class NodeConfig {
           coreSorterClass,
           solrDataHome,
           booleanQueryMaxClauseCount,
+          coordinatorRH,
           configSetBaseDirectory,
           sharedLibDirectory,
           shardHandlerFactoryConfig,

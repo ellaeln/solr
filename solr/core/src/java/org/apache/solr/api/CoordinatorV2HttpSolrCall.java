@@ -24,9 +24,14 @@ import org.apache.solr.core.SolrCore;
 import org.apache.solr.servlet.CoordinatorHttpSolrCall;
 import org.apache.solr.servlet.SolrDispatchFilter;
 
+import java.util.LinkedList;
+
 public class CoordinatorV2HttpSolrCall extends V2HttpCall {
   private String collectionName;
   CoordinatorHttpSolrCall.Factory factory;
+  private LinkedList<String> coordinatorRH;
+  private final String DEFAULT_COORDINATOR_RH = "/select";
+
 
   public CoordinatorV2HttpSolrCall(
       CoordinatorHttpSolrCall.Factory factory,
@@ -37,6 +42,7 @@ public class CoordinatorV2HttpSolrCall extends V2HttpCall {
       boolean retry) {
     super(solrDispatchFilter, cc, request, response, retry);
     this.factory = factory;
+    //bring list
   }
 
   @Override
@@ -44,7 +50,7 @@ public class CoordinatorV2HttpSolrCall extends V2HttpCall {
     this.collectionName = collectionName;
     SolrCore core = super.getCoreByCollection(collectionName, isPreferLeader);
     if (core != null) return core;
-    if (!path.endsWith("/select")) return null;
+    if (coordinatorRH.stream().noneMatch(rh -> path.endsWith(rh))) return null;
     return CoordinatorHttpSolrCall.getCore(factory, this, collectionName, isPreferLeader);
   }
 

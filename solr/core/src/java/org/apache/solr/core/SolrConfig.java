@@ -36,18 +36,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -282,6 +271,8 @@ public class SolrConfig implements MapSerializable {
       // Parse indexConfig section, using mainIndex as backup in case old config is used
       indexConfig = new SolrIndexConfig(get("indexConfig"), null);
 
+
+
       booleanQueryMaxClauseCount =
           get("query").get("maxBooleanClauses").intVal(BooleanQuery.getMaxClauseCount());
       if (IndexSearcher.getMaxClauseCount() < booleanQueryMaxClauseCount) {
@@ -291,6 +282,12 @@ public class SolrConfig implements MapSerializable {
             BooleanQuery.getMaxClauseCount(),
             "set 'maxBooleanClauses' in solr.xml to increase global limit");
       }
+
+      coordinatorRH = get("query").get("coordinatorRequestHandlerList").exists()
+              ? get("query").get("coordinatorRequestHandlerList").toString().split(",")
+              : new String[] {"/select"};
+
+
       prefixQueryMinPrefixLength =
           get("query")
               .get(MIN_PREFIX_QUERY_TERM_LENGTH)
@@ -674,6 +671,7 @@ public class SolrConfig implements MapSerializable {
 
   /* The set of materialized parameters: */
   public final int booleanQueryMaxClauseCount;
+  public final String[] coordinatorRH;
   public final int prefixQueryMinPrefixLength;
   // SolrIndexSearcher - nutch optimizer -- Disabled since 3.1
   //  public final boolean filtOptEnabled;
@@ -1026,6 +1024,7 @@ public class SolrConfig implements MapSerializable {
     m.put("queryResultMaxDocsCached", queryResultMaxDocsCached);
     m.put("enableLazyFieldLoading", enableLazyFieldLoading);
     m.put("maxBooleanClauses", booleanQueryMaxClauseCount);
+    m.put("coordinatorRH", coordinatorRH);
     m.put(MIN_PREFIX_QUERY_TERM_LENGTH, prefixQueryMinPrefixLength);
 
     for (SolrPluginInfo plugin : plugins) {
