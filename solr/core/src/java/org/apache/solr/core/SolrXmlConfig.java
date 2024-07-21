@@ -350,7 +350,9 @@ public class SolrXmlConfig {
               case "maxBooleanClauses":
                 builder.setBooleanQueryMaxClauseCount(it.intVal(-1));
                 break;
-              case "coordinatorRH": builder.setCoordinatorRH(it.txt().split(","));
+              case "coordinatorRH":
+                builder.setCoordinatorRH(it.txt().split(","));
+                break;
               case "managementPath":
                 builder.setManagementPath(it.txt());
                 break;
